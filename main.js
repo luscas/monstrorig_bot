@@ -21,6 +21,7 @@ async function getStats2miners() {
     workers: res.workers,
     workersOffline: res.workersOffline,
     workersOnline: res.workersOnline,
+    workersTotal: res.workersTotal,
   };
 }
 
@@ -69,17 +70,21 @@ bot.on(/^\/stats (.+)$/, async (msg, props) => {
   if (text == "2miners") {
     let data = await getStats2miners();
 
+    if (data.workersTotal == data.workersOffline) {
+      return bot.sendMessage(msg.from.id, "Workers Offline");
+    }
+
     let text = `Hashrate atual: <b>${data.current_hashrate} mh's</b>
-Pagamentos:
-Balanço: <b>${data.payments.balance} eth</b>
-Pago: <b>${data.payments.paid} eth</b>
---------------------------------------------------
-Ganhos:
-60 minutos: <b>${data.rewards[0].reward / 10e8} eth</b>
-12 horas: <b>${data.rewards[1].reward / 10e8} eth</b>
-24 horas: <b>${data.rewards[2].reward / 10e8} eth</b>
-7 dias: <b>${data.rewards[3].reward / 10e8} eth</b>
-30 dias: <b>${data.rewards[4].reward / 10e8} eth</b>`;
+    Pagamentos:
+    Balanço: <b>${data.payments.balance} eth</b>
+    Pago: <b>${data.payments.paid} eth</b>
+    --------------------------------------------------
+    Ganhos:
+    60 minutos: <b>${data.rewards[0].reward / 10e8} eth</b>
+    12 horas: <b>${data.rewards[1].reward / 10e8} eth</b>
+    24 horas: <b>${data.rewards[2].reward / 10e8} eth</b>
+    7 dias: <b>${data.rewards[3].reward / 10e8} eth</b>
+    30 dias: <b>${data.rewards[4].reward / 10e8} eth</b>`;
 
     return bot.sendMessage(msg.chat.id, text, {
       parseMode: "HTML",
